@@ -1,0 +1,8 @@
+src/androidTest
+src/test
+src/obj
+src/jni/.settings
+gradle/
+gradlew
+gradlew.bat
+/build

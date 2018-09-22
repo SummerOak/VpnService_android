@@ -15,8 +15,7 @@ public class NetCoreIface {
 
     private static Notification sNotification;
 
-    public static final int NOTIFICATION_ID = 1;
-    public static final String NOTIFICATION_CHANNEL_ID = "netcore";
+    public static int sNotificationID = 1;
 
     private static boolean sInited = false;
 
@@ -37,8 +36,9 @@ public class NetCoreIface {
         VpnCore.setListener(l);
     }
 
-    public static void setForgroundNotifycation(Notification notifycation){
+    public static void setForgroundNotifycation(int id, Notification notifycation){
         sNotification = notifycation;
+        sNotificationID = id;
     }
 
     public static int startVpn(Context context){
@@ -83,6 +83,10 @@ public class NetCoreIface {
 
     static Notification getForegroundNotifycation(){
         return sNotification;
+    }
+
+    static int getForegroundNotificationId(){
+        return sNotificationID;
     }
 
     public interface IListener{

@@ -1,5 +1,6 @@
 package com.summer.netcore;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.VpnService;
@@ -47,7 +48,9 @@ public class VpnServer extends VpnService implements Runnable{
         if(intent != null){
             if(ACT_START.equals(intent.getAction())){
                 sRunning = true;
-                startForeground(NetCoreIface.NOTIFICATION_ID, NetCoreIface.getForegroundNotifycation());
+                int notificationID = NetCoreIface.getForegroundNotificationId();
+                Notification notification = NetCoreIface.getForegroundNotifycation();
+                startForeground(notificationID, notification);
                 if(mThread == null){
                     mThread = new Thread(this);
                     mThread.start();
@@ -147,8 +150,8 @@ public class VpnServer extends VpnService implements Runnable{
         }
 
         sRunning = false;
-//        stopForeground(false);
-        stopSelf();
+        stopForeground(false);
+//        stopSelf();
 
     }
 

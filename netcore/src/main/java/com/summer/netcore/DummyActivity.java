@@ -15,7 +15,6 @@ public class DummyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        moveTaskToBack(true);
         Intent intent = VpnServer.prepare(this);
         if (intent != null) {
             startActivityForResult(intent, 0);

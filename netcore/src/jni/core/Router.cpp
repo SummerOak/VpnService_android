@@ -27,7 +27,6 @@ Router::Router(int tunFd){
 }
 
 Router::~Router(){
-    
     releaseSessions(mUDPSessions);
     releaseSessions(mTCPSessions);
     releaseData();
@@ -215,10 +214,10 @@ Error Router::route(std::list<Session*>& sessions,IPHeader& ip){
 
 int Router::releaseSessions(std::list<Session*>& sessions){
     if(!sessions.empty()){
-        for(std::list<Session*>::iterator itr = sessions.begin();itr != sessions.end();itr++){
+        for(std::list<Session*>::iterator itr = sessions.begin();itr != sessions.end();){
             Session* session = *itr;
             Session::releaseSession(session);
-            sessions.erase(itr);
+            itr = sessions.erase(itr);
         }
     }
 
@@ -232,12 +231,14 @@ int Router::cleanDeadSessions(){
 int Router::cleanDeadSessions(std::list<Session*>& sessions){
     int r = 0;
     if(!sessions.empty()){
-        for(std::list<Session*>::iterator itr = sessions.begin();itr != sessions.end();itr++){
+        for(std::list<Session*>::iterator itr = sessions.begin();itr != sessions.end();){
             Session* session = *itr;
             if(session->hasClosed()){
                 Session::releaseSession(session);
-                sessions.erase(itr);
+                itr = sessions.erase(itr);
                 ++r;
+            }else{
+                itr++;
             }
         }
     }

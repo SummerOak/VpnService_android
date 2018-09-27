@@ -7,7 +7,7 @@
 #include <string.h>
 #include <errno.h>
 
-const char* EpollReactor::TAG = "VpnLib.EpollReactor";
+const char* EpollReactor::TAG = PTAG("EpollReactor");
 
 EpollReactor::EpollReactor(){
 
@@ -35,18 +35,19 @@ EpollReactor::EpollReactor(){
 EpollReactor::~EpollReactor(){
 	LOGR(TAG,"destroy reactor>>>");
 	if(mEpollFD >= 0){
-		for(map<int,EventStub*>::iterator itr = mFd2Events.begin();itr!=mFd2Events.end();itr++){
+		for(map<int,EventStub*>::iterator itr = mFd2Events.begin();itr!=mFd2Events.end();){
 			int fd = itr->first;
 	        EventStub* pEventStub = itr->second;
 			struct epoll_event* pEpollEvent = pEventStub->event;
 	        if(epoll_ctl(mEpollFD,EPOLL_CTL_DEL,itr->first,pEpollEvent)){
 	        	LOGE(TAG,"remvoe fd(%d) failed, %s(%d)",fd, strerror(errno), errno);
+	        	itr++;
 	        	continue;
 	        }
 
 	        SAFE_DELETE(pEpollEvent);
 			SAFE_DELETE(pEventStub);
-			mFd2Events.erase(itr->first);
+			itr = mFd2Events.erase(itr);
 	    }
 
 		close(mEpollFD);

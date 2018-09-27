@@ -133,9 +133,11 @@ int JniBridge::notifyConnInfo(int event, ConnInfo& info){
 
 	LOGD(TAG,"calling static notifyConnInfo in java...");
 
+	jstring jstrDest = env->NewStringUTF(info.dest);
 	jint ret = env->CallStaticIntMethod((jclass)sJInstance, sMidOnConnInfo, event, info.id, info.uid, info.type, info.state,
 	info.accept, info.back, info.sent, info.recv, info.size, info.flag, info.seq, info.ack,
-	env->NewStringUTF(info.dest), info.destPort);
+	jstrDest, info.destPort);
+	env->DeleteLocalRef(jstrDest);
 	checkException();
 
 	LOGD(TAG,"post call notifyConnInfo ...");
@@ -157,8 +159,12 @@ int JniBridge::queryControlStrategy(int uid, int ipver, const char* ip, int port
 	}
 
 	LOGD(TAG,"calling static queryControlStrategy in java...");
+	jstring jstrIP = env->NewStringUTF(ip);
+	jstring jstrDNS = env->NewStringUTF(dns);
 	jint ret = env->CallStaticIntMethod((jclass)sJInstance, sMidQueryControlStrategy, 
-		uid, ipver, env->NewStringUTF(ip), port, protocol, env->NewStringUTF(dns));
+		uid, ipver, jstrIP, port, protocol, jstrDNS);
+	env->DeleteLocalRef(jstrIP);
+	env->DeleteLocalRef(jstrDNS);
 	checkException();
 
 	LOGD(TAG,"post call queryControlStrategy %d", ret);

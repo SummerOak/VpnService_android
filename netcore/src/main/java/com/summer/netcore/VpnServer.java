@@ -132,10 +132,14 @@ public class VpnServer extends VpnService implements Runnable{
 
         mFd = builder.establish();
 
-        Log.d(TAG,"vpn start...");
-        int ret = VpnCore.start(this,mFd.getFd());
+        if(mFd != null){
+            Log.d(TAG,"vpn start...");
+            int ret = VpnCore.start(this,mFd.getFd());
+            Log.d(TAG,"vpn stopping, ret " + ret);
+        }else{
+            Log.e(TAG, "establish tun failed.");
+        }
 
-        Log.d(TAG,"vpn stopping, ret " + ret);
         mThread = null;
     }
 

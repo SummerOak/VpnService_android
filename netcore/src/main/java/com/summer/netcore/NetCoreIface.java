@@ -41,19 +41,26 @@ public class NetCoreIface {
         sNotificationID = id;
     }
 
-    public static int startVpn(Context context){
+    public static int startVpn(Activity activity){
 
         if(!sInited){
             Log.e(TAG, "startVpn before init success, call init first.");
             return 1;
         }
 
-        try{
-            Intent intent = new Intent(context,DummyActivity.class);
-            context.startActivity(intent);
-        }catch (Throwable t){
-            t.printStackTrace();
+        Intent intent = VpnServer.prepare(activity);
+        if (intent != null) {
+            Log.e(TAG, "vpn permission not granted.");
             return 1;
+        }
+
+        Intent it = new Intent(activity, VpnServer.class);
+        it.setAction(VpnServer.ACT_START);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(it);
+        } else {
+            activity.startService(it);
         }
 
         return 0;
@@ -61,18 +68,14 @@ public class NetCoreIface {
 
     public static int stopVpn(Context context){
 
-        if(!sInited){
+        if(!sInited || !isServerRunning()){
             return 0;
         }
 
         try {
             Intent intent = new Intent(context, VpnServer.class);
             intent.setAction(VpnServer.ACT_STOP);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent);
-            } else {
-                context.startService(intent);
-            }
+            context.startService(intent);
         }catch (Throwable t){
             t.printStackTrace();
             return 1;

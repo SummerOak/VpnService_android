@@ -1,6 +1,5 @@
 package com.summer.netcore;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
@@ -41,26 +40,30 @@ public class NetCoreIface {
         sNotificationID = id;
     }
 
-    public static int startVpn(Activity activity){
+    public static int startVpn(Context context){
+        if(context == null){
+            Log.e(TAG, "invalid context params");
+            return 1;
+        }
 
         if(!sInited){
             Log.e(TAG, "startVpn before init success, call init first.");
             return 1;
         }
 
-        Intent intent = VpnServer.prepare(activity);
+        Intent intent = VpnServer.prepare(context);
         if (intent != null) {
             Log.e(TAG, "vpn permission not granted.");
             return 1;
         }
 
-        Intent it = new Intent(activity, VpnServer.class);
+        Intent it = new Intent(context, VpnServer.class);
         it.setAction(VpnServer.ACT_START);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity.startForegroundService(it);
+            context.startForegroundService(it);
         } else {
-            activity.startService(it);
+            context.startService(it);
         }
 
         return 0;
